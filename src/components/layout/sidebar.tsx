@@ -1,6 +1,6 @@
 'use client';
 
-import { type SidebarProps } from './types'; // Optional: external type if reused
+import { type SidebarProps } from '../layout/types'; // Optional: external type if reused
 import {
   PlusCircle,
   List,
