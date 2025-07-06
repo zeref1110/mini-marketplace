@@ -14,6 +14,7 @@ export type ListingFormData = {
   images: File[];
   location: string;
   description: string;
+  createdAt: string;
 };
 
 export default function ListingForm() {
@@ -31,6 +32,7 @@ export default function ListingForm() {
       images: [],
       location: '',
       description: '',
+      createdAt: new Date().toISOString(),
     },
   });
 

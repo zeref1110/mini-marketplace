@@ -9,7 +9,33 @@ interface PreviewCardProps {
     category?: string;
     location?: string;
     description?: string;
+    createdAt?: string;
   };
+}
+
+// ⏱️ Helper function to format listing time
+function formatListingTime(dateStr?: string) {
+  if (!dateStr) return '';
+  const now = new Date();
+  const created = new Date(dateStr);
+  const diffMs = now.getTime() - created.getTime();
+  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHrs / 24);
+  const diffYears = now.getFullYear() - created.getFullYear();
+
+  if (diffHrs < 1) return 'Listed just now';
+  if (diffHrs < 24) return `Listed ${diffHrs} hr${diffHrs > 1 ? 's' : ''} ago`;
+  if (diffDays < 7) return `Listed ${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  if (diffYears >= 1)
+    return `Listed in ${created.toLocaleDateString('en-US', {
+      month: 'long',
+      day: '2-digit',
+      year: 'numeric',
+    })}`;
+  return `Listed in ${created.toLocaleDateString('en-US', {
+    month: 'long',
+    day: '2-digit',
+  })}`;
 }
 
 export default function PreviewCard({ data }: PreviewCardProps) {
@@ -39,16 +65,16 @@ export default function PreviewCard({ data }: PreviewCardProps) {
           {data.price ? `₱${data.price}` : '₱0.00'}
         </p>
         <p className="text-sm text-gray-600">
-          {data.category || 'Category'}
+          {formatListingTime(data.createdAt)} <br /> in  {data.location || 'Unknown location'}
         </p>
         <p className="text-sm text-gray-600">
-          {data.location || 'Location not set'}
-        </p>
-        <p className="text-sm text-gray-600 italic">
-          {data.email || 'Email address'}
+          {data.category || 'Category'}
         </p>
         <p className="text-gray-800 text-sm">
           {data.description || 'No description provided.'}
+        </p>
+        <p className="text-sm text-gray-600 italic">
+          {data.email || 'Email address'}
         </p>
       </div>
     </div>
