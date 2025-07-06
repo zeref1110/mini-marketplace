@@ -76,10 +76,22 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
         <Controller
           control={control}
           name="images"
-          render={({ field }) => (
-            <Dropzone onDrop={field.onChange} value={field.value} />
+          rules={{
+            validate: (value) =>
+              value && value.length > 0 || "At least one image is required."
+          }}
+          render={({ field, fieldState }) => (
+            <>
+              <Dropzone onDrop={field.onChange} value={field.value} />
+              {fieldState.error && (
+                <p className="text-red-600 text-sm mt-1">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </>
           )}
         />
+
 
         <input
           {...register('title', { required: true })}
