@@ -17,12 +17,17 @@ export type ListingFormData = {
   createdAt: string;
 };
 
-export default function ListingForm() {
+interface ListingFormProps {
+  onSuccess: () => void;
+}
+
+export default function ListingForm({ onSuccess }: ListingFormProps) {
   const {
     register,
     handleSubmit,
     watch,
     control,
+    reset,
   } = useForm<ListingFormData>({
     defaultValues: {
       title: '',
@@ -32,14 +37,33 @@ export default function ListingForm() {
       images: [],
       location: '',
       description: '',
-      createdAt: new Date().toISOString(),
+      createdAt: '', // will set it manually on submit
     },
   });
 
   const formData = watch();
 
-  const onSubmit = (data: ListingFormData) => {
-    console.log('Submitted:', data);
+  const onSubmit = async (data: ListingFormData) => {
+    try {
+      const payload = {
+        ...data,
+        createdAt: new Date().toISOString(),
+      };
+
+      const response = await fetch('/api/listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) throw new Error('Failed to post listing');
+
+      reset(); // ✅ Clear form
+      onSuccess(); // ✅ Show toast or success banner
+    } catch (error) {
+      console.error(error);
+      alert('Failed to post listing. Please try again.');
+    }
   };
 
   return (
@@ -49,12 +73,11 @@ export default function ListingForm() {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full lg:w-1/3 space-y-4"
       >
-        {/* 🖼 Dropzone */}
         <Controller
           control={control}
           name="images"
           render={({ field }) => (
-            <Dropzone onDrop={(files: File[]) => field.onChange(files)} />
+            <Dropzone onDrop={field.onChange} value={field.value} />
           )}
         />
 
@@ -85,7 +108,7 @@ export default function ListingForm() {
           placeholder="Location"
           className="w-full border px-3 py-2 rounded-md"
         />
-        
+
         <input
           {...register('email', {
             required: true,

@@ -5,17 +5,27 @@ import Image from 'next/image';
 
 type DropzoneProps = {
   onDrop: (files: File[]) => void;
+  value?: File[]; // optional controlled prop to track external reset
 };
 
-export default function Dropzone({ onDrop }: DropzoneProps) {
+export default function Dropzone({ onDrop, value = [] }: DropzoneProps) {
   const [previews, setPreviews] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const previewsRef = useRef<string[]>([]); // used for cleanup tracking
 
-  const handleFiles = useCallback((files: File[]) => {
-    onDrop(files);
-    const urls = files.map((file) => URL.createObjectURL(file));
-    setPreviews(urls);
-  }, [onDrop]);
+  const handleFiles = useCallback(
+    (files: File[]) => {
+      onDrop(files);
+
+      // Revoke old previews first to prevent memory leaks
+      previewsRef.current.forEach((url) => URL.revokeObjectURL(url));
+
+      const urls = files.map((file) => URL.createObjectURL(file));
+      setPreviews(urls);
+      previewsRef.current = urls;
+    },
+    [onDrop]
+  );
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
@@ -41,12 +51,21 @@ export default function Dropzone({ onDrop }: DropzoneProps) {
     inputRef.current?.click();
   };
 
-  // 🔁 Cleanup on unmount
+  // Clear previews if value is reset externally
+  useEffect(() => {
+    if (value.length === 0 && previewsRef.current.length > 0) {
+      previewsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      previewsRef.current = [];
+      setPreviews([]);
+    }
+  }, [value]);
+
+  // Cleanup previews on unmount
   useEffect(() => {
     return () => {
-      previews.forEach((url) => URL.revokeObjectURL(url));
+      previewsRef.current.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [previews]);
+  }, []);
 
   return (
     <div

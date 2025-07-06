@@ -7,6 +7,7 @@ import ListingForm from '@/components/forms/ListingForm';
 import ItemGrid from '@/components/marketplace/item-grid';
 import { mockItems } from '@/lib/mock-data';
 import type { ViewState } from '@/components/layout/types';
+import toast from 'react-hot-toast'
 
 export default function HomePage() {
   const [view, setView] = useState<ViewState>('default');
@@ -29,7 +30,12 @@ export default function HomePage() {
           <ChooseListingType onSelect={setView} />
         )}
 
-        {view === 'create-item' && <ListingForm />}
+        {view === 'create-item' && (
+          <ListingForm 
+            onSuccess={() => {
+              toast.success('Listing successfully posted!')
+            }}
+          />)}
       </main>
 
       {/* Fixed Sidebar */}
