@@ -5,6 +5,7 @@ import Dropzone from './Dropzone';
 import PreviewCard from './PreviewCard';
 import PriceInput from './PriceInput';
 import CategorySelect from './CategorySelect';
+import { supabase } from '@/lib/supabase';
 
 export type ListingFormData = {
   title: string;
@@ -37,7 +38,7 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
       images: [],
       location: '',
       description: '',
-      createdAt: '', // will set it manually on submit
+      createdAt: '',
     },
   });
 
@@ -45,9 +46,48 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
 
   const onSubmit = async (data: ListingFormData) => {
     try {
+      let imageUrl = '';
+
+      if (data.images.length > 0) {
+        const imageFile = data.images[0];
+        const filePath = `listing-${Date.now()}-${imageFile.name}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('listing-images')
+          .upload(filePath, imageFile, {
+            cacheControl: '3600',
+            upsert: false,
+            contentType: imageFile.type || 'image/jpeg',
+          });
+
+
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          console.dir(uploadError, { depth: null });
+          throw new Error('Image upload failed');
+        }
+
+        const { publicUrl } = supabase.storage
+          .from('listing-images')
+          .getPublicUrl(filePath).data;
+
+        if (!publicUrl) {
+          throw new Error('Could not retrieve public image URL');
+        }
+
+        imageUrl = publicUrl;
+
+      }
+
       const payload = {
-        ...data,
+        title: data.title,
+        price: data.price,
+        email: data.email,
+        category: data.category,
+        location: data.location,
+        description: data.description,
         createdAt: new Date().toISOString(),
+        image_url: imageUrl,
       };
 
       const response = await fetch('/api/listings', {
@@ -56,13 +96,23 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error('Failed to post listing');
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(errorText);
+        throw new Error('Failed to post listing');
+      }
 
-      reset(); // ✅ Clear form
-      onSuccess(); // ✅ Show toast or success banner
+      reset();     // Clear form
+      onSuccess(); // Trigger success toast or state change
+
     } catch (error) {
-      console.error(error);
-      alert('Failed to post listing. Please try again.');
+      if (error instanceof Error) {
+        console.error('Listing post failed:', error.message);
+        alert(error.message);
+      } else {
+        console.error('Unknown error', error);
+        alert('An unexpected error occurred.');
+      }
     }
   };
 
@@ -78,7 +128,7 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
           name="images"
           rules={{
             validate: (value) =>
-              value && value.length > 0 || "At least one image is required."
+              value && value.length > 0 || 'At least one image is required.'
           }}
           render={({ field, fieldState }) => (
             <>
@@ -91,7 +141,6 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
             </>
           )}
         />
-
 
         <input
           {...register('title', { required: true })}
