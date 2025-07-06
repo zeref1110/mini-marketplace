@@ -20,7 +20,7 @@ export default function PreviewCard({ data }: PreviewCardProps) {
   return (
     <div className="border rounded-lg shadow-md overflow-hidden w-full bg-white">
       {/* 🖼️ Image */}
-      <div className="relative w-full h-64 bg-gray-100">
+      <div className="relative w-full h-120 bg-gray-100">
         <Image
           src={previewImageUrl}
           alt="Preview"

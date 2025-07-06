@@ -32,7 +32,7 @@ export default function Sidebar({ onSelect }: SidebarProps) {
   ];
 
   return (
-    <aside className="w-64 bg-white shadow-md h-[calc(100vh-64px)] hidden md:block">
+    <aside className="fixed top-16 left-0 w-64 h-[calc(100vh-64px)] bg-white shadow-md overflow-y-auto z-40">
       <div className="p-4 space-y-6">
         {/* Create Section */}
         <div>

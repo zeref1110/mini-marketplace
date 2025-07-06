@@ -8,7 +8,7 @@ export default function Header() {
   useEffect(() => setIsClient(true), []);
 
   return (
-    <header className="bg-[#1877F2] text-white px-4 py-3 shadow-md">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-[#1877F2] text-white z-50 shadow">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <h1 className="text-xl font-semibold">Marketplace</h1>
         <div className="flex items-center gap-4">

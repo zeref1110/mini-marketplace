@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.className}>
-      <body className="bg-gray-100 text-gray-900">
+      <body className="bg-gray-100 text-gray-900 h-screen overflow-hidden">
         <Header />
         {children} {/* ⬅️ HomePage will handle layout (Sidebar + Main) */}
       </body>
