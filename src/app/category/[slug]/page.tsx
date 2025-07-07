@@ -1,16 +1,17 @@
-// src/app/category/[slug]/page.tsx
-interface Props {
-  params: {
-    slug: string;
-  };
-}
+'use client';
 
-export default function CategoryPage({ params }: Props) {
+import { useParams } from 'next/navigation';
+
+export default function CategoryPage() {
+  const { slug } = useParams() as { slug: string };
+
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold capitalize">{params.slug}</h2>
-      <p>Filtered items from category: <strong>{params.slug}</strong></p>
-      {/* You'd filter and show item grid here based on `slug` */}
+      <h2 className="text-2xl font-bold capitalize">{slug}</h2>
+      <p>
+        Filtered items from category: <strong>{slug}</strong>
+      </p>
+      {/* TODO: fetch & render ItemGrid filtered by `slug` */}
     </div>
   );
 }
