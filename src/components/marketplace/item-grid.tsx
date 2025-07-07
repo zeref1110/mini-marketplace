@@ -1,15 +1,40 @@
-// src/components/marketplace/item-grid.tsx
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Item } from '@/types/item'; // ✅ Centralized type
+import { Item } from '@/types/item';
 
 interface ItemGridProps {
   items: Item[];
+  loading?: boolean;
 }
 
-export default function ItemGrid({ items }: ItemGridProps) {
+export default function ItemGrid({ items, loading = false }: ItemGridProps) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {Array.from({ length: 10 }).map((_, index) => (
+          <div
+            key={index}
+            className="animate-pulse bg-white rounded-lg shadow overflow-hidden p-4"
+          >
+            <div className="bg-gray-200 h-48 w-full rounded-md mb-4" />
+            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+            <div className="h-4 bg-gray-200 rounded w-1/2" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!items.length) {
+    return (
+      <div className="text-center text-gray-600 py-12">
+        <p>No items found.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       {items.map((item) => (

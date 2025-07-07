@@ -13,37 +13,71 @@ import type { Item } from '@/types/item';
 export default function HomePage() {
   const [view, setView] = useState<ViewState>('default');
   const [items, setItems] = useState<Item[]>([]);
+  const [allItems, setAllItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); // 🆕 Add loading state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const fetchListings = async () => {
+    setLoading(true); // 🔄 Start loading
     const { data, error } = await supabase
       .from('listings')
       .select('*')
-      .order('created_at', { ascending: false }); // 🆕 Show newest listings first
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('❌ Failed to fetch listings:', error.message);
       toast.error('Failed to load listings.');
     } else {
-      setItems(data || []);
+      setAllItems(data || []);
     }
+
+    setLoading(false); // ✅ End loading
   };
 
-  // 🔁 Run on first load & when view changes back to 'default'
   useEffect(() => {
-    if (view === 'default') {
-      fetchListings();
+    fetchListings();
+  }, []);
+
+  useEffect(() => {
+    if (view !== 'default') return;
+
+    let filtered = allItems;
+
+    if (searchQuery.trim()) {
+      filtered = filtered.filter((item) =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
-  }, [view]);
+
+    if (selectedCategory) {
+      filtered = filtered.filter(
+        (item) => item.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
+    }
+
+    setItems(filtered);
+  }, [searchQuery, selectedCategory, allItems, view]);
 
   return (
     <div className="flex pt-16 h-[calc(100vh-64px)]">
-      <div className="w-64" /> {/* Spacer for fixed sidebar */}
+      <div className="w-64" /> {/* Sidebar spacer */}
 
       <main className="flex-1 overflow-y-auto p-6">
         {view === 'default' && (
           <>
-            <h2 className="text-2xl font-bold mb-4">Marketplace Items</h2>
-            <ItemGrid items={items} />
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Marketplace Items</h2>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search listings..."
+                className="border border-gray-300 rounded-md px-3 py-1 text-sm"
+              />
+            </div>
+
+            <ItemGrid items={items} loading={loading} />
           </>
         )}
 
@@ -55,13 +89,14 @@ export default function HomePage() {
           <ListingForm
             onSuccess={() => {
               toast.success('✅ Listing successfully posted!');
-              setView('default'); // Triggers re-fetch
+              setView('default');
+              fetchListings(); // re-fetch after post
             }}
           />
         )}
       </main>
 
-      <Sidebar onSelect={setView} />
+      <Sidebar onSelect={setView} onSelectCategory={setSelectedCategory} />
     </div>
   );
 }

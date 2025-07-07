@@ -8,4 +8,5 @@ export type ViewState =
 
 export type SidebarProps = {
   onSelect: React.Dispatch<React.SetStateAction<ViewState>>;
+  onSelectCategory: (category: string) => void;
 };

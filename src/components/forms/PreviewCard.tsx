@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useMemo } from 'react';
 import Image from 'next/image';
 
 interface PreviewCardProps {
@@ -39,9 +42,21 @@ function formatListingTime(dateStr?: string) {
 }
 
 export default function PreviewCard({ data }: PreviewCardProps) {
-  const previewImageUrl = data.images?.[0]
-    ? URL.createObjectURL(data.images[0])
-    : 'https://via.placeholder.com/600x400?text=No+Image';
+  const previewImageUrl = useMemo(() => {
+    if (data.images?.[0]) {
+      return URL.createObjectURL(data.images[0]);
+    }
+    return 'https://via.placeholder.com/600x400?text=No+Image';
+  }, [data.images]);
+
+  useEffect(() => {
+    return () => {
+      // 🔁 Clean up the object URL if it was created
+      if (data.images?.[0]) {
+        URL.revokeObjectURL(previewImageUrl);
+      }
+    };
+  }, [previewImageUrl, data.images]);
 
   return (
     <div className="border rounded-lg shadow-md overflow-hidden w-full bg-white">
@@ -65,7 +80,7 @@ export default function PreviewCard({ data }: PreviewCardProps) {
           {data.price ? `₱${data.price}` : '₱0.00'}
         </p>
         <p className="text-sm text-gray-600">
-          {formatListingTime(data.createdAt)} <br /> in  {data.location || 'Unknown location'}
+          {formatListingTime(data.createdAt)} {data.location || 'Unknown location'}
         </p>
         <p className="text-sm text-gray-600">
           {data.category || 'Category'}

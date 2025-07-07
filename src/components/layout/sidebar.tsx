@@ -1,6 +1,6 @@
 'use client';
 
-import { type SidebarProps } from '../layout/types'; // Optional: external type if reused
+import { type SidebarProps } from '../layout/types';
 import {
   PlusCircle,
   List,
@@ -12,7 +12,14 @@ import {
   Sofa,
 } from 'lucide-react';
 
-export default function Sidebar({ onSelect }: SidebarProps) {
+interface SidebarWithCategoryProps extends SidebarProps {
+  onSelectCategory: (category: string) => void;
+}
+
+export default function Sidebar({
+  onSelect,
+  onSelectCategory,
+}: SidebarWithCategoryProps) {
   const listingOptions = [
     {
       label: 'Choose listing type',
@@ -58,6 +65,7 @@ export default function Sidebar({ onSelect }: SidebarProps) {
             {categories.map(({ label, icon: Icon }) => (
               <li
                 key={label}
+                onClick={() => onSelectCategory(label)} // ✅ trigger category filter
                 className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded cursor-pointer"
               >
                 <Icon size={18} className="text-gray-700" />

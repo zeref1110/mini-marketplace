@@ -9,13 +9,12 @@ import { supabase } from '@/lib/supabase';
 
 export type ListingFormData = {
   title: string;
-  price: string;
+  price: string; // ✅ originally string from PriceInput
   email: string;
   category: string;
   images: File[];
   location: string;
   description: string;
-  createdAt: string;
 };
 
 interface ListingFormProps {
@@ -38,7 +37,6 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
       images: [],
       location: '',
       description: '',
-      createdAt: '',
     },
   });
 
@@ -60,10 +58,8 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
             contentType: imageFile.type || 'image/jpeg',
           });
 
-
         if (uploadError) {
           console.error('Upload error:', uploadError);
-          console.dir(uploadError, { depth: null });
           throw new Error('Image upload failed');
         }
 
@@ -76,17 +72,16 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
         }
 
         imageUrl = publicUrl;
-
       }
 
+      // ✅ Create payload with correct types
       const payload = {
         title: data.title,
-        price: data.price,
+        price: parseFloat(data.price),
         email: data.email,
         category: data.category,
         location: data.location,
         description: data.description,
-        createdAt: new Date().toISOString(),
         image_url: imageUrl,
       };
 
@@ -98,12 +93,12 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(errorText);
+        console.error('API error response:', errorText);
         throw new Error('Failed to post listing');
       }
 
-      reset();     // Clear form
-      onSuccess(); // Trigger success toast or state change
+      reset();
+      onSuccess();
 
     } catch (error) {
       if (error instanceof Error) {
@@ -128,7 +123,7 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
           name="images"
           rules={{
             validate: (value) =>
-              value && value.length > 0 || 'At least one image is required.'
+              value && value.length > 0 || 'At least one image is required.',
           }}
           render={({ field, fieldState }) => (
             <>

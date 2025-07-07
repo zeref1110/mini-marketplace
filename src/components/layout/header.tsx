@@ -1,27 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { MessageCircle, Bell, User } from 'lucide-react';
+import Link from 'next/link';
+
 
 export default function Header() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => setIsClient(true), []);
-
+  
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-[#1877F2] text-white z-50 shadow">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Marketplace</h1>
-        <div className="flex items-center gap-4">
-          {isClient && (
-            <input
-              type="text"
-              placeholder="Search"
-              className="rounded-md px-3 py-1 text-black"
-            />
-          )}
-          <button className="bg-white text-[#1877F2] px-3 py-1 rounded-md font-medium">
-            Post
-          </button>
+      <div className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-8">
+        <Link href="/">
+          <h1 className="text-xl font-semibold cursor-pointer">Marketplace</h1>
+        </Link>
+
+        <div className="flex items-center gap-6 cursor-pointer">
+          <MessageCircle size={20} />
+          <Bell size={20} />
+          <User size={20} />
         </div>
       </div>
     </header>

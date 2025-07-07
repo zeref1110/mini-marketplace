@@ -6,12 +6,11 @@ type CategorySelectProps = {
 };
 
 const categories = [
-  'Electronics',
-  'Fashion',
-  'Home & Living',
-  'Books',
   'Vehicles',
-  'Other',
+  'Rentals',
+  'Apparel',
+  'Electronics',
+  'Furniture',
 ];
 
 export default function CategorySelect({ value, onChange }: CategorySelectProps) {
