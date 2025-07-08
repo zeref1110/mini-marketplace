@@ -136,7 +136,7 @@ export default function ItemDetailPage() {
                     return;
                   }
 
-                  toast.success('✅ Message sent!');
+                  toast.success('Message sent!');
                   form.reset();
                 } catch (err) {
                   console.error('❌ Send failed:', err);
@@ -161,7 +161,7 @@ export default function ItemDetailPage() {
                 />
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:cursor-not-allowed cursor-pointer"
                 >
                   Send Message
                 </button>

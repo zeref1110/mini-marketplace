@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import Header from "@/components/layout/header";
+import Header from "../components/layout/header";
 import { Toaster } from "react-hot-toast"; // ✅ Import this
 
 const inter = Inter({

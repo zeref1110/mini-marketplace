@@ -6,6 +6,7 @@ import PreviewCard from './PreviewCard';
 import PriceInput from './PriceInput';
 import CategorySelect from './CategorySelect';
 import { supabase } from '@/lib/supabase';
+import toast from 'react-hot-toast';
 
 export type ListingFormData = {
   title: string;
@@ -43,6 +44,8 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
   const formData = watch();
 
   const onSubmit = async (data: ListingFormData) => {
+    const loadingToast = toast.loading('Posting...');
+    
     try {
       let imageUrl = '';
 
@@ -99,14 +102,15 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
 
       reset();
       onSuccess();
+      toast.success('Listing posted successfully!', { id: loadingToast });
 
     } catch (error) {
       if (error instanceof Error) {
         console.error('Listing post failed:', error.message);
-        alert(error.message);
+        toast.error(error.message, { id: loadingToast });
       } else {
         console.error('Unknown error', error);
-        alert('An unexpected error occurred.');
+        toast.error('An unexpected error occurred.', { id: loadingToast });
       }
     }
   };
@@ -183,12 +187,12 @@ export default function ListingForm({ onSuccess }: ListingFormProps) {
 
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full cursor-pointer  disabled:cursor-not-allowed"
         >
           Post Listing
         </button>
       </form>
-
+ 
       {/* 🖼 Live Preview on the Right */}
       <div className="w-full lg:w-2/3">
         <PreviewCard data={formData} />
