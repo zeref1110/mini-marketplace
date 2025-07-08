@@ -21,7 +21,7 @@ export default function Header() {
         <Link 
           href="/" 
           onClick={handleLogoClick}
-          className="text-xl font-semibold hover:underline"
+          className="text-xl font-semibold"
         >
           Marketplace
         </Link>
