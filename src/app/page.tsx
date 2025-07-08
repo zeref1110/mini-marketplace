@@ -88,7 +88,7 @@ export default function HomePage() {
         {view === 'create-item' && (
           <ListingForm
             onSuccess={() => {
-              toast.success('✅ Listing successfully posted!');
+              toast.success('Listing successfully posted!');
               setView('default');
               fetchListings(); // re-fetch after post
             }}
